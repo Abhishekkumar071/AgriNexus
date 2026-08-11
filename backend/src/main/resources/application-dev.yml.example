@@ -1,0 +1,9 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/agrinexus_dev
+
+jwt:
+  secret: your-256-bit-secret-key-here-change-me
+  access-token-expiration: 900000      # 15 min in ms
+  refresh-token-expiration: 604800000  # 7 days in ms
