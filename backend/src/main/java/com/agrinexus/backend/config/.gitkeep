@@ -1,0 +1,105 @@
+GET http://localhost:8080/actuator/health
+
+
+package com.agrinexus.backend.config;
+
+import org.springframework.boot.health.contributor.Health;
+import org.springframework.boot.health.contributor.HealthIndicator;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Component;
+
+@Component("mongo")
+public class MongoHealthConfig implements HealthIndicator {
+
+    private final MongoTemplate mongoTemplate;
+
+    public MongoHealthConfig(MongoTemplate mongoTemplate) {
+        this.mongoTemplate = mongoTemplate;
+    }
+
+    @Override
+    public Health health() {
+        try {
+            mongoTemplate.getDb().runCommand(
+                new org.bson.Document("ping", 1)
+            );
+
+            return Health.up()
+                    .withDetail("database", mongoTemplate.getDb().getName())
+                    .withDetail("message", "MongoDB connection is healthy")
+                    .build();
+
+        } catch (Exception e) {
+            return Health.down()
+                    .withDetail("database", mongoTemplate.getDb().getName())
+                    .withDetail("error", e.getMessage())
+                    .build();
+        }
+    }
+}
+
+
+
+//remember it
+MongoDB Health Check — Simple Summary
+
+Your MongoDB is working correctly. The problem is only with Spring Boot's health check.
+
+Spring Boot health check sends a hello command to MongoDB's local database. Your Atlas user does not have permission for that operation, so health becomes DOWN. Your actual application database agrinexus_dev is working fine.
+
+Why not give local permission?
+
+local, admin, and config are internal/protected MongoDB databases. MongoDB Atlas recommends avoiding writes to these databases. Also, normal Atlas roles such as readWriteAnyDatabase and dbAdminAnyDatabase specifically exclude local and config.
+
+So:
+
+Your app database:
+agrinexus_dev       ✅
+
+Internal database:
+local               🔒
+If you want to learn Atlas permissions
+
+In Atlas:
+
+Database & Network Access → Database Users → Custom Roles → Add New Custom Role
+
+Atlas allows you to create custom roles and select specific actions + databases/collections.
+
+For example, for your application you could create a role like:
+
+Role name: agrinexusAppRole
+
+Database: agrinexus_dev
+
+Permissions:
+    find
+    insert
+    update
+    remove
+
+Then assign this role to:
+
+agrinexus_admin
+
+This is the proper Atlas RBAC approach: give the user only the permissions it actually needs.
+
+But for local
+
+Don't try to give your application user broad access to local.
+
+If your goal is simply:
+
+/actuator/health
+        ↓
+MongoDB UP / DOWN
+
+then the better solution is to make the health check test your agrinexus_dev database, instead of trying to give your application user special access to MongoDB's internal local database.
+
+Remember this rule 🧠
+
+Application user → application database (agrinexus_dev)
+Monitoring/health → check application database
+Internal DB (local, config, admin) → don't give unnecessary permissions
+
+That's also the safer/least-privilege approach recommended for Atlas.
