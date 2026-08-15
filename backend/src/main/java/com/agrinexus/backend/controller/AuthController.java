@@ -1,6 +1,8 @@
 package com.agrinexus.backend.controller;
 
+import com.agrinexus.backend.dto.request.LoginRequestDTO;
 import com.agrinexus.backend.dto.request.RegisterRequestDTO;
+import com.agrinexus.backend.dto.response.AuthResponseDTO;
 import com.agrinexus.backend.dto.response.UserResponseDTO;
 import com.agrinexus.backend.service.AuthService;
 import jakarta.validation.Valid;
@@ -24,4 +26,11 @@ public class AuthController {
         UserResponseDTO response = authService.register(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO requestDTO) {
+        AuthResponseDTO response = authService.login(requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
 }
