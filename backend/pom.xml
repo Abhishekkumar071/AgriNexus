@@ -30,16 +30,35 @@
 		<java.version>21</java.version>
 	</properties>
 	<dependencies>
+<!--		It’s an API vs Implementation separation pattern, similar to SLF4J + Logback.-->
+
+<!--		jjwt-api → The API/contract your application code uses.-->
+<!--		jjwt-impl → The actual JWT implementation.-->
+<!--		jjwt-jackson → Jackson-based JSON serialization/deserialization.-->
+
+<!--		The implementation dependencies are usually marked runtime because your code doesn’t directly depend on their classes.-->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
 		</dependency>
-
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>

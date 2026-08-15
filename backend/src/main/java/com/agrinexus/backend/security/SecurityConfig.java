@@ -19,7 +19,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        .anyRequest().permitAll()   // TEMPORARY — Step 4-5 mein .authenticated() karenge jab JWT filter ready hoga
+                        .anyRequest().authenticated()  // ab REAL — pehle temporary permitAll() tha
                 );
         return http.build();
     }
