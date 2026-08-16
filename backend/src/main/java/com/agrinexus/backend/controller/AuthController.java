@@ -1,6 +1,7 @@
 package com.agrinexus.backend.controller;
 
 import com.agrinexus.backend.dto.request.LoginRequestDTO;
+import com.agrinexus.backend.dto.request.RefreshTokenRequestDTO;
 import com.agrinexus.backend.dto.request.RegisterRequestDTO;
 import com.agrinexus.backend.dto.response.AuthResponseDTO;
 import com.agrinexus.backend.dto.response.UserResponseDTO;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -33,4 +35,16 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponseDTO> refresh(@Valid @RequestBody RefreshTokenRequestDTO requestDTO) {
+        AuthResponseDTO response = authService.refresh(requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(Authentication authentication) {
+        String email = authentication.getName();   // JwtAuthenticationFilter ne yeh already SecurityContext mein set kiya
+        authService.logout(email);
+        return ResponseEntity.noContent().build();   // 204 — success, no body
+    }
 }

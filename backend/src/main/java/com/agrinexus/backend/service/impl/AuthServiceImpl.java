@@ -1,6 +1,7 @@
 package com.agrinexus.backend.service.impl;
 
 import com.agrinexus.backend.dto.request.LoginRequestDTO;
+import com.agrinexus.backend.dto.request.RefreshTokenRequestDTO;
 import com.agrinexus.backend.dto.request.RegisterRequestDTO;
 import com.agrinexus.backend.dto.response.AuthResponseDTO;
 import com.agrinexus.backend.dto.response.UserResponseDTO;
@@ -84,5 +85,46 @@ public class AuthServiceImpl implements AuthService {
                 .phoneNumber(user.getPhoneNumber())
                 .createdAt(user.getCreatedAt())
                 .build();
+    }
+
+    @Override
+    public AuthResponseDTO refresh(RefreshTokenRequestDTO requestDTO) {
+
+        String refreshToken = requestDTO.getRefreshToken();
+
+        if (!jwtUtil.isTokenValid(refreshToken)) {
+            throw new RuntimeException("Invalid or expired refresh token"); // placeholder — Module 5 mein 401
+        }
+
+        String email = jwtUtil.extractEmail(refreshToken);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Critical DB-backed check — yeh hi logout ko meaningful banata hai
+        if (!refreshToken.equals(user.getRefreshToken())) {
+            log.warn("Refresh token mismatch/reuse attempt for user: {}", email);
+            throw new RuntimeException("Invalid refresh token");
+        }
+
+        String newAccessToken = jwtUtil.generateAccessToken(user);
+
+        log.info("Access token refreshed for user: {}", email);
+
+        return AuthResponseDTO.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(refreshToken)   // SAME refresh token returned — no rotation in V1
+                .build();
+    }
+
+    @Override
+    public void logout(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setRefreshToken(null);
+        user.setUpdatedAt(Instant.now());
+        userRepository.save(user);
+
+        log.info("User logged out: {}", email);
     }
 }
