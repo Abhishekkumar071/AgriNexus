@@ -26,6 +26,17 @@ public class SecurityConfig {
                 .cors(cors -> {})   // uses the CorsConfigurationSource bean automatically (Spring auto-detects it)
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers
+                        .contentTypeOptions(contentTypeOptions -> {})   // X-Content-Type-Options: nosniff
+                        .frameOptions(frameOptions -> frameOptions.deny())  // X-Frame-Options: DENY
+                        .httpStrictTransportSecurity(hsts -> hsts
+                                .includeSubDomains(true)
+                                .maxAgeInSeconds(31536000)   // 1 year, standard HSTS duration
+                        )
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("default-src 'none'")   // pure JSON API — nothing needs to load
+                        )
+                )
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(authenticationEntryPoint)   // handles 401 cases
                         .accessDeniedHandler(accessDeniedHandler)              // handles 403 cases
