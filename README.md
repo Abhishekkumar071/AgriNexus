@@ -4,6 +4,28 @@ Enterprise-grade AI-powered agriculture platform featuring intelligent crop advi
 
 # AgriNexus — V1 Requirements (Foundation)
 Status: **Frozen** (changes only for critical reasons, explicitly called out)
+```
+
+┌─────────────────────────────────────────┐
+│  1. Controller Layer                     │  ← HTTP request/response, routing
+│     (@RestController)                    │
+├─────────────────────────────────────────┤
+│  2. Service Layer                        │  ← Business logic (interfaces!)
+│     (@Service, interface + impl)         │
+├─────────────────────────────────────────┤
+│  3. Repository Layer                     │  ← Data access
+│     (MongoRepository)                    │
+├─────────────────────────────────────────┤
+│  4. Domain/Model Layer                   │  ← MongoDB documents (@Document)
+├─────────────────────────────────────────┤
+│  5. Database (MongoDB)                   │
+└─────────────────────────────────────────┘
+
+Cross-cutting (har layer ke through guzarti hain):
+  - Security Filter Chain (JWT validation)
+  - Exception Handling (@ControllerAdvice)
+  - Validation (Bean Validation on DTOs)
+```
 
 ---
 
