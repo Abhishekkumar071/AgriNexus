@@ -77,3 +77,15 @@ Cross-cutting (har layer ke through guzarti hain):
 ## Explicitly Out of Scope for V1
 
 AI advisory, chatbot, pest detection, weather integration, market data, notifications, admin panel, soft delete, microservices split — all deferred to their mapped versions (V2–V6) per the frozen roadmap.
+
+## 📄 License
+
+MIT — free to use for learning and portfolio purposes.
+
+<div align="center">
+<br/>
+
+⭐ If this project helped you understand production-style Spring Boot + React architecture, consider starring it!
+
+</div>
+
